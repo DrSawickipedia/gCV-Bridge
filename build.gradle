@@ -16,11 +16,6 @@ repositories {
         url 'https://ci.lucko.me/plugin/repository/everything/'
     }
 
-    // Use our own build of gchat
-    flatDir {
-        dirs '../libs/'
-    }
-
     maven {
         name 'velocity'
         url 'https://nexus.velocitypowered.com/repository/maven-public/'
@@ -39,10 +34,6 @@ repositories {
     }
 
     maven {
-        url = uri('https://nexus.vankka.dev/repository/maven-public/')
-    }
-
-    maven {
         url = uri('https://jcenter.bintray.com')
     }
 
@@ -52,11 +43,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.javacord:javacord:3.8.0-shaded'
+    implementation 'org.javacord:javacord:3.8.0'
     implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.11.0'
     implementation 'com.vdurmont:emoji-java:4.0.0'
-    implementation 'dev.vankka:mcdiscordreserializer:4.4.0-SNAPSHOT-shaded'
-    implementation 'club.minnced:discord-webhooks:0.8.2-all'
+    implementation 'dev.vankka:mcdiscordreserializer:4.3.0'
+    implementation 'club.minnced:discord-webhooks:0.8.2'
 
     annotationProcessor 'com.velocitypowered:velocity-api:3.0.1'
     compileOnly 'com.velocitypowered:velocity-api:3.0.1'
