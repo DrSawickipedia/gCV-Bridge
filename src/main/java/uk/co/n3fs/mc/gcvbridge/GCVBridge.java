@@ -131,6 +131,7 @@ public class GCVBridge {
 
         new DiscordApiBuilder()
             .setToken(config.getToken())
+			.setAllIntents()
             .addLostConnectionListener(connListener::onConnectionLost)
             .addReconnectListener(connListener::onReconnect)
             .addResumeListener(connListener::onResume)
