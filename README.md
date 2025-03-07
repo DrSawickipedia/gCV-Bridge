@@ -31,8 +31,9 @@ If you're like me and don't have much Minecraft plugin development experience bu
 	- `discord-webhooks-0.8.2-all.jar`
 	- `mcdiscordreserializer-4.4.0-SNAPSHOT.jar`
 	- `placeholders-common-5.1-SNAPSHOT.jar`
-Extra Debugging Notes:
-	- The plugin is unable to load due to missing classes/methods from some dependency:
-		- Add the built `.jar` (if there are multiple options, pick the `-all` version) to `./src/main/resources/`
-		- If you need to built it yourself, make sure to use `shadowJar` here as well
-		- I really hope there is never a case where you have to do this recursively for a dependency as well, but java seems to be full of suffering so it's worth a check if the previous steps don't work
+
+**Extra Debugging Notes:**
+- The plugin is unable to load due to missing classes/methods from some dependency:
+	- Add the built `.jar` (if there are multiple options, pick the `-all` version) to `./src/main/resources/`
+	- If you need to built it yourself, make sure to use `shadowJar` here as well
+	- I really hope there is never a case where you have to do this recursively for a dependency as well, but java seems to be full of suffering so it's worth a check if the previous steps don't work
