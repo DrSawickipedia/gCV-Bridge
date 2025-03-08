@@ -57,7 +57,7 @@ dependencies {
 }
 
 group = 'uk.co.n3fs.mc'
-version = '0.3-SNAPSHOT'
+version = '0.4'
 description = 'gCV-Bridge'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 

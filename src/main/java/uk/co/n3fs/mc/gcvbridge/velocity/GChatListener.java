@@ -13,32 +13,33 @@ import net.kyori.adventure.text.Component;
 import uk.co.n3fs.mc.gcvbridge.GCVBridge;
 import uk.co.n3fs.mc.gcvbridge.util.TextUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GChatListener {
 
     private final GCVBridge plugin;
-    private final String webhook;
-    private Boolean has_webhook = false;
-    private WebhookClient client = null;
+    private final List<String> webhooks;
+    private final List<WebhookClient> clients = new ArrayList<>();
 
     public GChatListener(GCVBridge plugin) {
         this.plugin = plugin;
 
-        this.webhook = plugin.getConfig().getOutWebhook();
+        this.webhooks = plugin.getConfig().getOutWebhooks();
 
-        if (this.webhook != null && !this.webhook.isEmpty()) {
-            this.has_webhook = true;
+        if (this.webhooks != null && !this.webhooks.isEmpty()) {
+            for(String webhook : this.webhooks) {
+                WebhookClientBuilder builder = new WebhookClientBuilder(webhook);
+                // builder.setThreadFactory((job) -> {
+                //     Thread thread = new Thread(job);
+                //     thread.setName("Hello");
+                //     thread.setDaemon(true);
+                //     return thread;
+                // });
 
-            WebhookClientBuilder builder = new WebhookClientBuilder(this.webhook);
-
-            // builder.setThreadFactory((job) -> {
-            //     Thread thread = new Thread(job);
-            //     thread.setName("Hello");
-            //     thread.setDaemon(true);
-            //     return thread;
-            // });
-
-            //builder.setWait(true);
-            this.client = builder.build();
+                //builder.setWait(true);
+                this.clients.add(builder.build());
+            }
         }
     }
 
@@ -93,25 +94,27 @@ public class GChatListener {
             raw_message = message;
         }
 
-        if (this.has_webhook) {
-            WebhookMessageBuilder builder = new WebhookMessageBuilder();
+        if (this.webhooks != null && !this.webhooks.isEmpty()) {
+            for (WebhookClient client : this.clients) {
+                WebhookMessageBuilder builder = new WebhookMessageBuilder();
 
-            //GChatPlayer gplayer = new GChatPlayer(source);
+                //GChatPlayer gplayer = new GChatPlayer(source);
 
-            String name = source.getUsername();
+                String name = source.getUsername();
 
-            builder.setUsername(name);
+                builder.setUsername(name);
 
-            String avatar_url = "https://api.mineatar.io/head/" + source.getUniqueId() + "?overlay";
+                String avatar_url = "https://api.mineatar.io/head/" + source.getUniqueId() + "?overlay";
 
-            builder.setAvatarUrl(avatar_url);
+                builder.setAvatarUrl(avatar_url);
 
-            builder.setContent(raw_message);
+                builder.setContent(raw_message);
 
-            this.client.send(builder.build());
+                client.send(builder.build());
+            }
         }
 		else {
-        plugin.getConfig().getOutChannels(plugin.getDApi())
+            plugin.getConfig().getOutChannels(plugin.getDApi())
                 .forEach(textChannel -> textChannel.sendMessage(message));
 		}
 

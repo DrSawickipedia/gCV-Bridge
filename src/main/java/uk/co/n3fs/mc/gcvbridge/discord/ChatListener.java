@@ -10,6 +10,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.event.message.MessageCreateEvent;
 import uk.co.n3fs.mc.gcvbridge.GCVBridge;
@@ -28,18 +29,18 @@ public class ChatListener {
         this.proxy = proxy;
     }
 
-    private static String replacePlaceholders(String format, MessageAuthor author, String message) {
+    private static String replacePlaceholders(String format, TextChannel channel, MessageAuthor author, String message) {
+        String channelName = channel.asServerChannel().isPresent() ? channel.asServerChannel().get().getName() : "Discord";
         return format == null ? null : format
                 .replace("{name}", author.getName())
-                .replace("{username}", author.getName())
                 .replace("{display_name}", author.getDisplayName())
-                .replace("{server_name}", "discord")
-                .replace("{message}", message);
+                .replace("{message}", message)
+                .replace("{channel}", channelName);
     }
 
-    private static TextComponent formatMessage(String format, MessageAuthor author, String message) {
+    private static TextComponent formatMessage(String format, TextChannel channel, MessageAuthor author, String message) {
         if (format == null) return Component.empty();
-        String replaced = replacePlaceholders(format, author, "{message}");
+        String replaced = replacePlaceholders(format, channel, author, "{message}");
         Component convertedMessage = MinecraftSerializer.INSTANCE.serialize(message);
         return Component.text("").append(LEGACY_LINKING_SERIALIZER.deserialize(replaced).replaceText("{message}", convertedMessage));
     }
@@ -51,13 +52,16 @@ public class ChatListener {
         if (event.getMessageAuthor().isYourself()) return;
 
         MessageAuthor author = event.getMessageAuthor();
+        TextChannel channel = event.getChannel();
 
         // Ignore webhook authors (probably ourselves)
         if (author.isWebhook()) {
             return;
         }
 
-        ChatFormat format = plugin.getConfig().getInFormat();
+        ChatFormat format = plugin.getConfig().getChannelFormats().containsKey(channel.getId())
+                ? plugin.getConfig().getChannelFormats().get(channel.getId())
+                : plugin.getConfig().getDefaultFormat();
 
         String message = event.getReadableMessageContent();
         message = EmojiParser.parseToAliases(message);
@@ -71,15 +75,15 @@ public class ChatListener {
         final Component hover;
 
         if (hover_text != null) {
-            hover = formatMessage(format.getHoverText(), author, message);
+            hover = formatMessage(format.getHoverText(), channel, author, message);
         } else {
             hover = null;
         }
 
         ClickEvent.Action clickType = format.getClickType();
-        String clickValue = replacePlaceholders(format.getClickValue(), author, message);
+        String clickValue = replacePlaceholders(format.getClickValue(), channel, author, message);
 
-        TextComponent component = formatMessage(format.getFormatText(), author, message)
+        TextComponent component = formatMessage(format.getFormatText(), channel, author, message)
                 .toBuilder()
                 .applyDeep(m -> {
                     if (hover != null) {

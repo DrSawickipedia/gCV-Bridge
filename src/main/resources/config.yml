@@ -5,10 +5,13 @@
 discord:
   # The bot token, used to log into Discord.
   token: ""
-  # The IDs of the channels to receive messages from.
+  # URLs of webhooks for the bot to send messages to (should be done per-channel)
+  # You can specify multiple channels here by separating the IDs with a comma.
+  out-webhooks: []
+  # The IDs of the channels to receive messages from (must be a server text channel).
   # You can specify multiple channels here by separating the IDs with a comma.
   in-channels: []
-  # The IDs of the channels to send messages to.
+  # The IDs of the channels to send messages to (must be a server text channel).
   # You can specify multiple channels here by separating the IDs with a comma.
   out-channels: []
   # Settings for the playerlist command
@@ -43,10 +46,22 @@ velocity:
 
 # gChat integration settings
 gchat:
-  # The name of the gChat format to use for incoming messages from Discord.
+  # The name of the default gChat format to use for incoming messages from Discord.
   # This should be defined in the gChat config.yml, then the name set below.
   # You can create a format just for Discord if you want.
-  in-format: default
+  default-format: default
+  # A list of key-value pairs of formats to use for specific channel IDs
+  # These IDs should correspond to one of the IDs in `in-channels`
+  # If a channel is not specified here, it will use the default format
+  # This list can be left empty if no per-channel formats are used
+  channel-formats:
+    channel1-id: default
+    channel2-id: default
+  # possible placeholders for from-discord messages
+  #   {name} = username of sender
+  #   {display_name} = display name of sender
+  #   {message} = message content
+  #   {channel} = channel name message was sent in
 
 # Neutron integration settings
 neutron:
